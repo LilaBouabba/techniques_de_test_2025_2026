@@ -1,92 +1,109 @@
 # TODO   Plan de test Triangulator 
 
+### test unitaires 
 
-# Objectif
+1. Tests unitaires : Conversion binaire PointSet
+## Ce que je dois tester
 
-L’objectif est de vérifier le bon fonctionnement du microservice Triangulator, qui :
+Encodage d’un PointSet → donne un binaire correct.
 
--récupère un ensemble de points (PointSet) via le PointSetManager (connecté à la base de données),
+Décodage d’un PointSet → redonne la liste de points d’origine.
 
--calcule la triangulation correspondante,
+Round-trip :
+decode(encode(points)) == points.
 
-_renvoie le résultat sous forme binaire (Triangles),
+## Cas à tester
 
--et gère correctement les erreurs possibles.
+PointSet normal : 3–4 points simples.
+
+PointSet vide : 0 point.
+
+Points avec valeurs négatives ou grandes.
+
+Données binaires tronquées → doit lever une erreur.
+
+Nombre de points annoncé incorrect → doit lever une erreur.
+
+2. Tests unitaires : Conversion binaire Triangles
+## Ce que je dois tester
+
+Encodage d’un ensemble (sommets, triangles).
+
+Décodage du binaire donne les mêmes données.
+
+Round-trip sur sommets + triangles.
+
+## Cas à tester
+
+1 triangle simple.
+
+Plusieurs triangles.
+
+Indice de triangle hors-borne → erreur.
+
+Buffer tronqué → erreur.
+
+3. Tests unitaires : Algorithme triangulate(points)
+## Ce que je dois tester
+
+Que l’algorithme renvoie :
+
+le bon nombre de triangles,
+
+uniquement des triangles valides (indices bons, aire > 0).
+
+## Cas à tester
+
+0 point → 0 triangle.
+
+1 point → 0 triangle.
+
+2 points → 0 triangle.
+
+3 points non alignés → 1 triangle.
+
+3 points alignés → 0 triangle.
+
+4 points formant un carré → 2 triangles.
+
+Points doublons → pas de triangles dégénérés.
 
 
-# Types de tests prévus:
 
- ## Tests unitaires
+### Tests API 
 
-Ces tests porteront sur les fonctions internes du Triangulator :
+1. UUID invalide → 400 : vérifier que l’API rejette un pointSetId mal formé.
 
-   ### Conversion binaire (PointSet / Triangles)
+2. PSM renvoie 404 → 404 : vérifier que l’API relaie correctement “PointSet non trouvé”.
 
--Vérifier que l’encodage et le décodage sont corrects et cohérents.
+3. PSM indisponible → 503 : vérifier que l’API gère l’erreur réseau/service down.
 
--Cas limites : 0 point, données invalides, valeurs extrêmes, etc.
+4. Buffer invalide → 400 ou 500 : vérifier que l’API détecte un PointSet binaire corrompu.
 
-     
-   ### Algorithme de triangulation
+5. Triangulation échoue → 500 : vérifier que l’API renvoie une erreur interne en cas d’échec du calcul.
 
--Vérifier que la triangulation est correcte pour des jeux de points simples (3 ou 4 points).
+6. Cas réussi → 200 + binaire : vérifier que l’API renvoie bien les triangles en format binaire.
 
--Cas particuliers : points doublons, alignés, vides, ou malformés.
 
--Vérifier que les indices des triangles sont valides et que les triangles ne se croisent pas.
 
-Ces tests permettent de valider la logique interne sans dépendre d’autres services.
+### test performances 
 
-## Test d'API
+Objectif : mesurer le temps d’exécution de triangulate(points) pour différentes tailles d’ensembles de points.
 
-Ces tests vérifieront le bon comportement de l’API HTTP décrite dans triangulator.yml.
+Tailles testées : 100 points, 1 000 points, 5 000 points.
 
-Cas principaux :GET /triangulation/{pointSetId} :
+Attendus :
 
--400 Bad Request → si l’UUID est invalide.
+la triangulation doit s’exécuter sans erreur,
 
--404 Not Found → si le PointSet n’existe pas.
+le temps doit rester raisonnable (on observe les valeurs).
 
--503 Service Unavailable → si le PointSetManager (ou la base) est indisponible.
+Approche :
 
--200 OK → si la triangulation est calculée avec succès, avec une réponse binaire correcte.
+générer des points (grille ou aléatoire avec graine fixe),
 
-On utilisera le Flask test client pour simuler les appels HTTP.
+mesurer le temps avec perf_counter(),
 
-## Test d'intégration:
-Le Triangulator dépend du PointSetManager (qui lui dépend d’une base de données).
-Pour tester cette intégration sans dépendre d’un vrai service, on créera un faux PointSetManager (mock) qui simulera ses réponses.
+exécuter triangulate(points),
 
-Cas prévus :
-
--Le PointSetManager renvoie un PointSet binaire valide → la triangulation réussit.
-
--Le PointSetManager renvoie 404 ou 503 → le Triangulator réagit avec le bon code HTTP.
-
--Le PointSetManager renvoie un binaire invalide → erreur 400 ou 500 selon le cas.
-
-Ces tests permettent de vérifier que les composants communiquent correctement entre eux.
-
-## Test de performance
-Mesurer le comportement du Triangulator sur des ensembles de points de différentes tailles (100, 1 000, 10 000).
-On observera :
-
--Le temps de conversion binaire (encode / decode).
--Le temps de triangulation.
--Les tests de performance seront marqués séparément pour pouvoir être exclus des tests normaux.
-
-# Cas d’erreur à couvrir
-
--PointSetID au mauvais format (UUID invalide).
-
--PointSet inexistant dans la base.
-
--PointSetManager ou base de données indisponible.
-
--Données binaires invalides (mauvais format, taille incohérente).
-
--Erreur interne de calcul (ex. tous points alignés).
-
-Chaque situation doit être testée avec le code d’erreur HTTP approprié.
-
-=> Comme objectif final on doit s'assurer que tous les cas fonctionnels et d'erreurs sont couvert, que els test d'intégration valident la communication avec la base; que la couverture du code est sup à 85%
+marquer ces tests avec @pytest.mark.perf pour les séparer des tests unitaires.
