@@ -1,4 +1,4 @@
 # Created by pytest automatically.
 .venv/
-.env/
 .pytest_cache/
+__pycache__/
