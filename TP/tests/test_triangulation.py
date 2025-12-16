@@ -1,8 +1,8 @@
 from triangulator.triangulator import Triangulator
 
-def test_triangulate_three_points():
-    """ quand on a 3 points non colineaires, on obtient un triangle."""
 
+def test_triangulate_three_points():
+    """Quand on a 3 points non colineaires, on obtient un triangle."""
     t = Triangulator()
     points = [(0,0), (1,0), (0,1)]
     triangles = t.triangulate(points)
@@ -15,7 +15,7 @@ def test_triangulate_colinear():
     assert t.triangulate(points) == []
 
 def test_triangulate_square():
-    """ quand on a 4 points formant un carre, on obtient 2 triangles."""
+    """Quand on a 4 points formant un carre, on obtient 2 triangles."""
     t = Triangulator()
     points = [(0,0), (1,0), (1,1), (0,1)]
     triangles = t.triangulate(points)

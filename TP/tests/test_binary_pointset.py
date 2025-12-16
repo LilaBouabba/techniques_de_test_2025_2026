@@ -1,8 +1,9 @@
 import pytest
 from triangulator.triangulator import Triangulator
 
+
 def test_pointset_roundtrip():
-    """ on test l'encodage et le decodage d'un point set."""
+    """On test l'encodage et le decodage d'un point set."""
     t = Triangulator()
     points = [(0.0, 0.0), (1.0, 1.0)]
     buf = t.encode_point_set(points)
@@ -10,14 +11,14 @@ def test_pointset_roundtrip():
     assert decoded == points
 
 def test_pointset_empty():
-    """ on test l'encodage et le decodage d'un point set vide."""
+    """On test l'encodage et le decodage d'un point set vide."""
     t = Triangulator()
     buf = t.encode_point_set([])
     decoded = t.decode_point_set(buf)
     assert decoded == []
 
 def test_pointset_invalid_buffer():
-    """cas ou le buffer est invalide."""
+    """Cas ou le buffer est invalide."""
     t = Triangulator()
     bad_buf = b"\x02\x00\x00\x00"  # annonce 2 points mais aucune donnée
     with pytest.raises(Exception):
@@ -25,7 +26,7 @@ def test_pointset_invalid_buffer():
 
 
 def test_pointset_extreme_values():
-    """cas avec des valeurs extremes."""
+    """Cas avec des valeurs extremes."""
     t = Triangulator()
     points = [(-1e9, 1e9), (3.14e6, -2.7e6)]
     buf = t.encode_point_set(points)

@@ -1,6 +1,6 @@
-import pytest
-import time
 import random
+import time
+import pytest
 from triangulator.triangulator import Triangulator
 
 

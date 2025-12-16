@@ -7,4 +7,18 @@ select = [
     "B",
     "SIM",
     "I",
+    
 ]
+
+[project]
+name = "triangulator"
+version = "0.1.0"
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+markers = [
+    "perf: tests de performance"
+]
+
+[tool.ruff]
+src = ["triangulator"]

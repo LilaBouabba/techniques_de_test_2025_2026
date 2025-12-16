@@ -1,8 +1,9 @@
 import pytest
 from triangulator.triangulator import Triangulator
 
+
 def test_triangles_roundtrip():
-    """quand on encode et decode des triangles, on retrouve les memes."""
+    """Quand on encode et decode des triangles, on retrouve les memes."""
     t = Triangulator()
     vertices = [(0,0), (1,0), (0,1)]
     triangles = [(0,1,2)]
@@ -12,14 +13,14 @@ def test_triangles_roundtrip():
     assert t2 == triangles
 
 def test_triangles_invalid_buffer():
-    """cas ou le buffer est invalide."""
+    """Cas ou le buffer est invalide."""
     t = Triangulator()
     bad_buf = b"\x01\x00\x00\x00"  # trop court
     with pytest.raises(Exception):
         t.decode_triangles(bad_buf)
 
 def test_triangles_index_error():
-    """cas ou les indices de triangles sont hors borne."""
+    """Cas ou les indices de triangles sont hors borne."""
     t = Triangulator()
     vertices = [(0,0), (1,0), (0,1)]
     triangles = [(0,1,5)]  # 5 hors borne
@@ -28,7 +29,7 @@ def test_triangles_index_error():
 
 
 def test_multiple_triangles_roundtrip():
-    """cas ou on a plusieurs triangles."""
+    """Cas ou on a plusieurs triangles."""
     t = Triangulator()
     vertices = [(0,0), (1,0), (1,1), (0,1)]
     triangles = [(0,1,2), (0,2,3)]

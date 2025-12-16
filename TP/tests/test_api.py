@@ -1,14 +1,13 @@
 import json
 import uuid
-import pytest
-from triangulator.app import create_app
-from triangulator.triangulator import Triangulator
-from triangulator.clients import PointSetManagerClient
 
+from triangulator.app import create_app
+from triangulator.clients import PointSetManagerClient
+from triangulator.triangulator import Triangulator
 
 
 def test_invalid_uuid_returns_400():
-    """quand l'UUID est invalide, on a une 400 BAD REQUEST."""
+    """Quand l'UUID est invalide, on a une 400 BAD REQUEST."""
     app = create_app()
     client = app.test_client()
 
@@ -22,7 +21,7 @@ def test_invalid_uuid_returns_400():
 
 
 def test_psm_returns_404(monkeypatch):
-    """quand le PSM ne trouve pas le PointSet, on a une 404 NOT FOUND."""
+    """Quand le PSM ne trouve pas le PointSet, on a une 404 NOT FOUND."""
     app = create_app()
     client = app.test_client()
 
@@ -42,7 +41,7 @@ def test_psm_returns_404(monkeypatch):
 
 
 def test_psm_unavailable(monkeypatch):
-    """quand le PSM est indisponible, on a une 503 SERVICE UNAVAILABLE."""
+    """Quand le PSM est indisponible, on a une 503 SERVICE UNAVAILABLE."""
     app = create_app()
     client = app.test_client()
 
@@ -60,7 +59,7 @@ def test_psm_unavailable(monkeypatch):
 
 
 def test_invalid_binary_from_psm(monkeypatch):
-    """quand le PSM renvoie un PointSet invalide, on a une 400 BAD REQUEST."""
+    """Quand le PSM renvoie un PointSet invalide, on a une 400 BAD REQUEST."""
     app = create_app()
     client = app.test_client()
 
@@ -80,7 +79,7 @@ def test_invalid_binary_from_psm(monkeypatch):
 
 
 def test_triangulation_failure(monkeypatch):
-    """quand la triangulation echoue, on a une 500 INTERNAL SERVER ERROR."""
+    """Quand la triangulation echoue, on a une 500 INTERNAL SERVER ERROR."""
     app = create_app()
     client = app.test_client()
 
@@ -101,7 +100,7 @@ def test_triangulation_failure(monkeypatch):
 
 
 def test_successful_triangulation(monkeypatch):
-    """quand tout va bien, on a une 200 OK avec les triangles binaires."""
+    """Quand tout va bien, on a une 200 OK avec les triangles binaires."""
     app = create_app()
     client = app.test_client()
 
